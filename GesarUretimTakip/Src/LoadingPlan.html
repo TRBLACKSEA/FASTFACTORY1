@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+</head>
+<body id="container" style="margin:0 0 0 0;">
+
+    <script src="../ThirdParty/js/build/three.min.js"></script>
+
+    <script src="../ThirdParty/js/examples/js/controls/OrbitControls.js"></script>
+    <script src="../ThirdParty/js/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+
+        let camera, scene, renderer;
+
+        function init() {
+
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.x = 5;
+            camera.position.y = 5;
+            camera.position.z = 10;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color('#E0E0E0');
+
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 3);
+            //hemiLight.color.setHSL(0.6, 1, 0.6);
+            //hemiLight.groundColor.setHSL(0.095, 1, 0.75);
+            hemiLight.position.set(0, 50, 0);
+            scene.add(hemiLight);
+            hemiLight.castShadow = false;
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight.color.setHSL(0.1, 1, 0.95);
+            dirLight.position.set(- 1, 1.75, 1);
+            dirLight.position.multiplyScalar(30);
+            //scene.add(dirLight);
+            dirLight.castShadow = false;
+            //dirLight.shadow.mapSize.width = 2048;
+            //dirLight.shadow.mapSize.height = 2048;
+
+            const texture = new THREE.TextureLoader().load('Images/box1.png');
+            texture.colorSpace = THREE.SRGBColorSpace;
+
+            const geometry = new THREE.BoxGeometry();
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+
+            mesh = new THREE.Mesh(geometry, material);
+            //scene.add(mesh);
+
+
+           
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = false;
+            //renderer.shadowMap.type = THREE.VSMShadowMap;
+            //renderer.outputEncoding = THREE.sRGBEncoding;
+            document.body.appendChild(renderer.domElement);
+
+            LoadGLBModel();
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+            const helper = new THREE.GridHelper(100, 100);
+            helper.name = "grid helper";
+            //helper.position.y = - 199;
+            //helper.material.opacity = 0.25;
+            //helper.material.transparent = true;
+            //scene.add(helper);
+
+
+            //
+            animate();
+
+        }
+        function animate() {
+
+            requestAnimationFrame(animate);
+
+            //mesh.rotation.x += 0.005;
+            //mesh.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+
+        }
+        
+        function LoadGLBModel() {
+            const loader = new THREE.GLTFLoader().setPath('Models/');
+            loader.load('truck.gltf', function (gltf) {
+
+                var modelMesh = gltf.scene;
+                //gltf.scene.position.x = p.x;
+                //gltf.scene.position.y = p.y;
+                //gltf.scene.position.z = p.z + 0.3;
+
+                //modelMesh.name = _name;
+                //scene.add(gltf.scene);
+                scene.add(modelMesh);
+
+                //renderer.render(scene, camera);
+
+            });
+        }
+        init();
+        animate();
+
+    </script>
+</body>
+</html>
